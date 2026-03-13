@@ -37,6 +37,23 @@ Your API surface becomes observable to agents, not just humans.
 
 ---
 
+## What agents struggle with in real APIs
+
+These are the problems that cause agents to retry in loops, hallucinate defaults, or silently return wrong data:
+
+- **Optional parameters with unclear defaults** — agent omits `currency`, API assumes USD, user is in EUR
+- **Polymorphic response shapes** — same endpoint returns an object or an array depending on result count
+- **Undocumented pagination** — agent fetches page 1 and treats it as the full result set
+- **Implicit authentication behavior** — 401 vs 403 vs silent empty response, no schema to distinguish them
+- **Missing error schemas** — agent can't tell a validation error from a server error
+- **Ambiguous enum values** — `status: "active"` vs `status: "enabled"` vs `status: "1"` across endpoints
+- **Inconsistent naming** — `user_id` in one endpoint, `userId` in another, `id` in a third
+- **Permissive schemas** — `additionalProperties: true` everywhere, so the agent never knows what's actually expected
+
+bettermcp detects all of these. The triage pipeline classifies them automatically from wire logs and agent reports — `schema-mismatch`, `missing-error-schema`, `inconsistent-naming`, `permissive-schema`, `missing-pagination`, `unexpected-response`. You don't have to wait for a bug report. The agents tell you.
+
+---
+
 ## How it works
 
 bettermcp turns any OpenAPI spec into a three-tool MCP server:
