@@ -29,6 +29,25 @@
     "api-gateway",
     "model-context-protocol"
   ],
+  "author": "Tony Hansmann and Philip Mikal",
+  "contributors": [
+    {
+      "name": "Tony Hansmann",
+      "url": "https://github.com/997unix"
+    },
+    {
+      "name": "Philip Mikal",
+      "url": "https://github.com/pmikal"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pmikal/bettermcp.git"
+  },
+  "homepage": "https://github.com/pmikal/bettermcp",
+  "bugs": {
+    "url": "https://github.com/pmikal/bettermcp/issues"
+  },
   "license": "MIT",
   "engines": {
     "node": ">=20.0.0"
