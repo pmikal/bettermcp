@@ -406,6 +406,6 @@ bettermcp does not:
 
 ## Contributing
 
-bettermcp is maintained by Tony Hansmann and Philip Mikal. We're building it on the side, with AI tooling, and keeping the scope tight. If you've hit a rough edge in the MCP ecosystem that belongs here, open an issue or send a pull request.
+bettermcp is maintained by [Tony Hansmann](https://github.com/997unix) and [Philip Mikal](https://github.com/pmikal). We're building it on the side, with AI tooling, and keeping the scope tight. If you've hit a rough edge in the MCP ecosystem that belongs here, open an issue or send a pull request.
 
 MIT License.
