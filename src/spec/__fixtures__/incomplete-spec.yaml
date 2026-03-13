@@ -1,0 +1,46 @@
+openapi: "3.0.3"
+info:
+  title: Incomplete API
+  version: "0.1.0"
+paths:
+  /users:
+    get:
+      responses:
+        "200":
+          description: User list
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "201":
+          description: Created
+  /items:
+    get:
+      operationId: listItems
+      summary: List items
+      description: Returns all items
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Item list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+  /health:
+    get:
+      x-internal: true
+      operationId: healthCheck
+      summary: Health check
+      responses:
+        "200":
+          description: OK
