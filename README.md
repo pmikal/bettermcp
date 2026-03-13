@@ -1,6 +1,7 @@
 # bettermcp
 
 The self-healing MCP server for OpenAPI-backed agents.
+Agent observability for APIs.
 
 ---
 
@@ -13,6 +14,26 @@ await server.start()
 ```
 
 What agents do with that access, what they report back, and how the system responds to both, is where it gets interesting.
+
+---
+
+## Why bettermcp exists
+
+When humans use APIs, debugging is straightforward.
+You see the request, the response, and the error.
+
+When agents use APIs, debugging breaks down.
+
+Agents retry in loops. They guess parameters. They misread schemas. They silently fall back to wrong endpoints. Traditional observability tools show the traffic but not the intent.
+
+bettermcp adds the missing layer:
+
+- agents can report confusion
+- the system captures execution signals
+- failures are classified automatically
+- resolution hints propagate back to future calls
+
+Your API surface becomes observable to agents, not just humans.
 
 ---
 
@@ -295,11 +316,74 @@ Key codes: BMCP005 (no spec loaded), BMCP008 (origin mismatch), BMCP009 (upstrea
 
 ## Why now
 
-SemVer was designed for a world where humans write clients and humans decide when to upgrade. That assumption is breaking down. The MCP ecosystem is young enough that the right conventions aren't locked in yet — which means there's still time to build them in at the foundation rather than bolt them on later. bettermcp is that attempt.
+MCP gives agents access to APIs. bettermcp makes that access observable. Those are different problems and both need solving.
+
+The MCP ecosystem is young enough that observability conventions aren't locked in yet. bettermcp is the attempt to establish them at the foundation rather than bolt them on later.
 
 What are we missing? `report()` is open. If your agents are hitting something we haven't accounted for — a pattern that doesn't classify well, a workflow that safe-mode handles badly, a versioning edge case — that's exactly the kind of signal we built `report()` to carry. Use it. The feedback loop works the same way for the project as it does for your API.
 
 For bug reports, feature requests, or pull requests: [github.com/pmikal/bettermcp](https://github.com/pmikal/bettermcp).
+
+---
+
+## Architecture
+
+```
+Agent
+  │
+  ├─ search()   ◄──────────────────────────┐
+  ├─ execute()                             │
+  └─ report()                             │
+       │                                  │
+       ▼                                  │
+  bettermcp MCP server                    │
+       │                                  │
+       ├─ version router                  │
+       ├─ translation handlers            │
+       ├─ safe-mode intercept             │
+       ├─ credential redaction            │
+       │                                  │
+       ▼                                  │
+  feedback store (SQLite)                 │
+       │                                  │
+       ├─ wire logs                       │
+       ├─ signals (synthetic + observed)  │
+       ├─ resolution hints ───────────────┘
+       └─ version states
+       │
+       ▼
+  Upstream API
+```
+
+---
+
+## Steady-state operation
+
+Typical production setup:
+
+| | |
+|---|---|
+| Active versions | 1 |
+| Deprecated versions | 1–2 |
+| Sunset versions | 0 |
+| Feedback store retention | 90 days |
+| Wire log sampling | enabled |
+| Safe-Mode | enabled in staging, selective in production |
+
+Issues surface in triage within 24h of first occurrence. The feedback store grows at roughly 1MB per 10,000 executions at default retention settings.
+
+---
+
+## Non-goals
+
+bettermcp does not:
+
+- replace API gateways (Kong, AWS API Gateway, nginx) — it sits beside them, not in front of them
+- replace schema governance or API design tooling
+- guarantee backward compatibility automatically — pinned versions and translation handlers give you the tools; correctness is still your responsibility
+- fully simulate business logic in Safe-Mode — synthetic responses are schema-valid, not semantically accurate
+- replace your test suite — Safe-Mode is for rehearsal, not validation
+- provide agent orchestration, routing, or LLM integration — it is strictly the API layer
 
 ---
 
